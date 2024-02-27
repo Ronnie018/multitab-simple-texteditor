@@ -1,4 +1,6 @@
+import classNames from 'classnames';
 import { useState } from "react";
+import Snippets from './Snippets';
 
 export default function App(props) {
   const [tabs, setTabs] = useState([
@@ -12,9 +14,12 @@ export default function App(props) {
   const [isEditing, setIsEditing] = useState(false);
   const [editedName, setEditedName] = useState("");
 
+  const [currentName, setCurrentName] = useState("");
+
   const handleTabChange = (id) => {
     setCurrentTab(id);
     setIsEditing(false); // Close editing mode when switching tabs
+    setCurrentName(tabs[id].name);
   };
 
   const handleDoubleClick = () => {
@@ -63,7 +68,7 @@ export default function App(props) {
           +
         </div>
       </div>
-      <div className="h-full flex-1 bg-dark_gray p-2">
+      <div className="h-full flex-1 bg-dark_gray p-2 relative">
         <textarea
           className="min-h-[calc(100vh-5rem)] w-full rounded-md p-2 resize-none"
           value={tabs[currentTab].text}
@@ -72,6 +77,7 @@ export default function App(props) {
             setTabs([...tabs]);
           }}
         />
+       <Snippets name={currentName} />
       </div>
     </div>
   );
