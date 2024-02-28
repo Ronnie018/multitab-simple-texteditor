@@ -5,10 +5,10 @@ import Snippets from './Snippets';
 export default function App(props) {
   
   const [tabs, setTabs] = useState([
-    { id: 0, text: "a", name: "tab1" },
-    { id: 1, text: "d", name: "tab2" },
-    { id: 2, text: "b", name: "tab3" },
-    { id: 3, text: "c", name: "tab4" },
+    { id: 0, text: "", name: "tab1" },
+    { id: 1, text: "", name: "tab2" },
+    { id: 2, text: "", name: "tab3" },
+    { id: 3, text: "", name: "tab4" },
   ]);
 
   const [currentTab, setCurrentTab] = useState(0);
