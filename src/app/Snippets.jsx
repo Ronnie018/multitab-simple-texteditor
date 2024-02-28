@@ -1,16 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const Snippets = ({ name }) => {
   const [open, setOpen] = useState(false);
   const [snippetText, setSnippetText] = useState('');
   const [savedSnippets, setSavedSnippets] = useState([]);
+  const [snippetName, setSnippetName] = useState(name);
+
+  useEffect(() => {
+    setSnippetName(name);
+  }, [name]);
 
   const handleSave = () => {
-    const replacedSnippet = snippetText.replace(/@name/g, name);
-    setSavedSnippets([...savedSnippets, replacedSnippet]);
+    const titleRegex = /@title "(.+?)"/;
+    const titleMatch = snippetText.match(titleRegex);
+    const title = titleMatch ? titleMatch[1] : 'Untitled';
+    const content = snippetText.replace(titleRegex, '');
+
+    setSavedSnippets([...savedSnippets, { title, content }]);
     setSnippetText('');
-    // You can also copy to clipboard here if needed
-    navigator.clipboard.writeText(replacedSnippet);
   };
 
   const handleDelete = (index) => {
@@ -41,7 +48,7 @@ const Snippets = ({ name }) => {
           <textarea
             value={snippetText}
             onChange={(e) => setSnippetText(e.target.value)}
-            placeholder="Enter your snippet here with @name"
+            placeholder={`Enter your snippet here with @name`}
             className="w-full h-40 bg-light_gray text-white p-4 rounded"
           />
           <button
@@ -53,18 +60,28 @@ const Snippets = ({ name }) => {
           {savedSnippets.length > 0 && (
             <div className="mt-4">
               <h3 className="text-lg font-semibold">Saved Snippets:</h3>
-              <ul className="list-disc pl-4">
-                {savedSnippets.map((snippet, index) => (
-                  <li key={index} className="mt-2">
-                    {snippet}{' '}
-                    <button
-                      onClick={() => handleDelete(index)}
-                      className="text-[#ff0000] ml-2"
+              <ul className="pl-0 flex">
+                {savedSnippets.map((snippet, index) => {
+                  const replacedSnippet = snippet.content.replace('@name', snippetName);
+
+                  return (
+                    <li
+                      key={index}
+                      className="mt-2 p-2 bg-light_focus cursor-pointer rounded"
+                      onClick={() => {
+                        navigator.clipboard.writeText(replacedSnippet);
+                      }}
                     >
-                      X
-                    </button>
-                  </li>
-                ))}
+                      <span className="font-bold">{snippet.title}</span>
+                      <button
+                        onClick={() => handleDelete(index)}
+                        className="text-[#ff0000] ml-2"
+                      >
+                        X
+                      </button>
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           )}

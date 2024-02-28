@@ -3,6 +3,7 @@ import { useState } from "react";
 import Snippets from './Snippets';
 
 export default function App(props) {
+  
   const [tabs, setTabs] = useState([
     { id: 0, text: "a", name: "tab1" },
     { id: 1, text: "d", name: "tab2" },

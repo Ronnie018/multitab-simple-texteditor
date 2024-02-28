@@ -53,3 +53,7 @@ select {
     transform: translateY(0rem);
   }
 }
+
+textarea {
+  @apply bg-blue_dark font-thin;
+}
