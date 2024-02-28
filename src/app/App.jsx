@@ -32,6 +32,12 @@ export default function App(props) {
     setEditedName(e.target.value);
   };
 
+  const handleNameKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      handleNameBlur();
+    }
+  };
+
   const handleNameBlur = () => {
     const updatedTabs = [...tabs];
     updatedTabs[currentTab].name = editedName;
@@ -57,6 +63,7 @@ export default function App(props) {
                 value={editedName}
                 onChange={handleNameChange}
                 onBlur={handleNameBlur}
+                onKeyDown={handleNameKeyDown} // Handle "Enter" key
                 autoFocus
               />
             )}
@@ -78,7 +85,7 @@ export default function App(props) {
             setTabs([...tabs]);
           }}
         />
-       <Snippets name={currentName} />
+        <Snippets name={currentName} />
       </div>
     </div>
   );
