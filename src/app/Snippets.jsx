@@ -26,7 +26,24 @@ const Snippets = ({ name }) => {
     setSavedSnippets(updatedSnippets);
   };
 
-  
+    const handleLoad = (event) => {
+    const file = event.target.files[0];
+
+    if (file) {
+      const reader = new FileReader();
+
+      reader.onload = (e) => {
+        try {
+          const loadedSnippets = JSON.parse(e.target.result);
+          setSavedSnippets(loadedSnippets);
+        } catch (error) {
+          console.error("Error loading snippets:", error);
+        }
+      };
+
+      reader.readAsText(file);
+    }
+  };
 
   return (
     <div className="absolute left-0 right-0 bottom-0">
@@ -53,16 +70,34 @@ const Snippets = ({ name }) => {
             placeholder={`Enter your snippet here with @name`}
             className="w-full h-40 bg-light_gray text-white p-4 rounded"
           />
-          <button
-            onClick={handleSave}
-            className="bg-blue_light text-white py-2 px-4 rounded mt-2"
-          >
-            Save Snippet
-          </button>
+          <div className='flex gap-1'>
+            <button
+              onClick={handleSave}
+              className="bg-blue_light text-white py-2 px-4 rounded mt-2"
+            >
+              Save Snippet
+            </button>
+            <input
+              type="file"
+              accept=".json"
+              onChange={handleLoad}
+              style={{ display: 'none' }}
+              className="mt-2 text-white"
+            />
+            <button
+              onClick={() => {
+                const fileInput = document.querySelector('input[type="file"]');
+                fileInput.click();
+              }}
+              className="bg-blue_main text-white py-2 px-4 rounded mt-2"
+            >
+              Load Snippets
+            </button>
+         </div>
           {savedSnippets.length > 0 && (
             <div className="mt-4">
               <h3 className="text-lg font-semibold">Saved Snippets:</h3>
-              <ul className="pl-0 flex">
+              <ul className="pl-0 flex flex-wrap gap-1">
                 {savedSnippets.map((snippet, index) => {
                   const replacedSnippet = snippet.content.replace('@name', snippetName);
 
