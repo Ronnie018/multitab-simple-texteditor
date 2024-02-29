@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 const Snippets = ({ name }) => {
   const [open, setOpen] = useState(false);
-  const [snippetText, setSnippetText] = useState('');
+  const [snippetText, setSnippetText] = useState(`@title ""\n\n`);
   const [savedSnippets, setSavedSnippets] = useState([]);
   const [snippetName, setSnippetName] = useState(name);
 
@@ -17,7 +17,7 @@ const Snippets = ({ name }) => {
     const content = snippetText.replace(titleRegex, '');
 
     setSavedSnippets([...savedSnippets, { title, content }]);
-    setSnippetText('');
+    setSnippetText(`@title ""\n\n`);
   };
 
   const handleDelete = (index) => {
@@ -25,6 +25,8 @@ const Snippets = ({ name }) => {
     updatedSnippets.splice(index, 1);
     setSavedSnippets(updatedSnippets);
   };
+
+  
 
   return (
     <div className="absolute left-0 right-0 bottom-0">
