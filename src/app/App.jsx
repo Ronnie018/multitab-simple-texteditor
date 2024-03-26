@@ -1,20 +1,18 @@
 import { useState } from "react";
-import Snippets from './Snippets';
-
-
+import Snippets from "./Snippets";
+import { FaRegSave } from "react-icons/fa";
 
 export default function App(props) {
-  
   const [tabs, setTabs] = useState([
-    { id: 0, text: "", name: "tab1" },
-    { id: 1, text: "", name: "tab2" },
-    { id: 2, text: "", name: "tab3" },
-    { id: 3, text: "", name: "tab4" },
+    { id: 0, text: "", name: "spam" },
+    { id: 1, text: "", name: "INCS" },
   ]);
 
   const [currentTab, setCurrentTab] = useState(0);
   const [isEditing, setIsEditing] = useState(false);
   const [editedName, setEditedName] = useState("");
+
+  const [savingOptions, setSavingOptions] = useState(false);
 
   const [currentName, setCurrentName] = useState("");
 
@@ -34,7 +32,7 @@ export default function App(props) {
   };
 
   const handleNameKeyDown = (e) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       handleNameBlur();
     }
   };
@@ -52,7 +50,7 @@ export default function App(props) {
         {tabs.map(({ id, name }) => (
           <div
             key={id}
-            className="grid h-10 min-w-10 px-1 cursor-pointer place-items-center rounded-md bg-blue_main hover:bg-blue_dark"
+            className="min-w-10 grid h-10 cursor-pointer place-items-center rounded-md bg-blue_main px-1 hover:bg-blue_dark"
             onClick={() => handleTabChange(id)}
             onDoubleClick={handleDoubleClick}
             title={name} // Tooltip content
@@ -76,10 +74,31 @@ export default function App(props) {
         >
           +
         </div>
+        <div
+          className="relative grid h-10 w-10 cursor-pointer place-items-center rounded-md bg-blue_main hover:bg-blue_dark"
+          onDoubleClick={(e) => setSavingOptions(!savingOptions)}
+        >
+          <FaRegSave size={20} color="white" />
+          {savingOptions && (
+            <div className="saving-options right-15 absolute flex h-10 w-10 bg-dark_gray">
+              <div>
+                <input
+                  className="h-10 w-10"
+                  type="text"
+                  value={JSON.stringify(tabs)}
+                  onChange={(e) => {
+                    let loaded_tabs = JSON.parse(e.target.value);
+                    setTabs(loaded_tabs);
+                  }}
+                />
+              </div>
+            </div>
+          )}
+        </div>
       </div>
-      <div className="h-full flex-1 bg-dark_gray p-2 relative">
+      <div className="relative h-full flex-1 bg-dark_gray p-2">
         <textarea
-          className="min-h-[calc(100vh-5rem)] w-full rounded-md p-2 resize-none"
+          className="min-h-[calc(100vh-5rem)] w-full resize-none rounded-md p-2"
           value={tabs[currentTab].text}
           onChange={(e) => {
             tabs[currentTab].text = e.target.value;
