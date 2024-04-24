@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Snippets from "./Snippets";
 import { FaRegSave } from "react-icons/fa";
+import useShortcuts from "./Shortcuts";
 
 export default function App(props) {
   const [tabs, setTabs] = useState(() => {
@@ -14,10 +15,12 @@ export default function App(props) {
     return savedTabs;
   });
 
-  let done = false;
   const [currentTab, setCurrentTab] = useState(0);
   const [isEditing, setIsEditing] = useState(false);
   const [editedName, setEditedName] = useState("");
+
+
+  useShortcuts(currentTab, setTabs, tabs[currentTab].text);
 
   const [currentName, setCurrentName] = useState("");
 
@@ -102,8 +105,13 @@ export default function App(props) {
           className="min-h-[calc(100vh-5rem)] w-full resize-none rounded-md p-2"
           value={tabs[currentTab].text}
           onChange={(e) => {
-            tabs[currentTab].text = e.target.value;
-            setTabs([...tabs]);
+
+            setTabs((prevTabs) => {
+              const updatedTabs = [...prevTabs];
+              updatedTabs[currentTab].text = e.target.value;
+              return updatedTabs;
+            });
+
           }}
         />
         <Snippets name={currentName} />
