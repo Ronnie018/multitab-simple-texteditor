@@ -20,8 +20,19 @@ export default function App(props) {
   const [isEditing, setIsEditing] = useState(false);
   const [editedName, setEditedName] = useState("");
 
+  const [showEmojis, setShowEmojis] = useState(false);
 
-  useShortcuts(currentTab, setTabs, tabs[currentTab].text, textArea);
+  const emojilist = ["⬇️", "⬆️", "✅", "🔧", "🏆"];
+
+  useShortcuts(
+    currentTab,
+    setTabs,
+    tabs[currentTab].text,
+    textArea,
+    setShowEmojis,
+    showEmojis,
+    emojilist
+  );
 
   const [currentName, setCurrentName] = useState("");
 
@@ -29,6 +40,7 @@ export default function App(props) {
     setCurrentTab(id);
     setIsEditing(false); // Close editing mode when switching tabs
     setCurrentName(tabs[id].name);
+    setShowEmojis(false);
   };
 
   const handleDoubleClick = () => {
@@ -56,27 +68,28 @@ export default function App(props) {
   return (
     <div className="App flex min-h-full flex-col bg-white_ish">
       <div className="tab-bar flex gap-2 bg-black p-2">
-        {tabs && tabs.map(({ id, name }) => (
-          <div
-            key={id}
-            className="min-w-10 grid h-10 cursor-pointer place-items-center rounded-md bg-blue_main px-1 hover:bg-blue_dark"
-            onClick={() => handleTabChange(id)}
-            onDoubleClick={handleDoubleClick}
-            title={name} // Tooltip content
-          >
-            <span>{name}</span>
-            {isEditing && id === currentTab && (
-              <input
-                type="text"
-                value={editedName}
-                onChange={handleNameChange}
-                onBlur={handleNameBlur}
-                onKeyDown={handleNameKeyDown} // Handle "Enter" key
-                autoFocus
-              />
-            )}
-          </div>
-        ))}
+        {tabs &&
+          tabs.map(({ id, name }) => (
+            <div
+              key={id}
+              className="min-w-10 grid h-10 cursor-pointer place-items-center rounded-md bg-blue_main px-1 hover:bg-blue_dark"
+              onClick={() => handleTabChange(id)}
+              onDoubleClick={handleDoubleClick}
+              title={name} // Tooltip content
+            >
+              <span>{name}</span>
+              {isEditing && id === currentTab && (
+                <input
+                  type="text"
+                  value={editedName}
+                  onChange={handleNameChange}
+                  onBlur={handleNameBlur}
+                  onKeyDown={handleNameKeyDown} // Handle "Enter" key
+                  autoFocus
+                />
+              )}
+            </div>
+          ))}
         <div
           className="grid h-10 w-10 cursor-pointer place-items-center rounded-md bg-blue_main hover:bg-blue_dark"
           onClick={() => setTabs([...tabs, { id: tabs.length }])}
@@ -102,19 +115,45 @@ export default function App(props) {
         </div>
       </div>
       <div className="relative h-full flex-1 bg-dark_gray p-2">
+        <div className="absolute">
+          {showEmojis && (
+            <div className="absolute flex w-[calc(100vw-4rem)] resize flex-wrap gap-2 bg-dark_gray p-2 opacity-80">
+              {emojilist.map((emoji) => (
+                <div
+                  key={emoji}
+                  className="cursor-pointer"
+                  onClick={() => {
+                    setTabs((prevTabs) => {
+                      const updatedTabs = [...prevTabs];
+                      const cursorPos = textArea.current.selectionStart;
+
+                      updatedTabs[currentTab].text =
+                        tabs[currentTab].text.slice(0, cursorPos) +
+                        emoji +
+                        tabs[currentTab].text.slice(cursorPos);
+                      updatedTabs[currentTab].text =
+                        updatedTabs[currentTab].text;
+                      return updatedTabs;
+                    });
+                  }}
+                >
+                  {emoji}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
         <textarea
           id={currentTab}
           ref={textArea}
           className="min-h-[calc(100vh-5rem)] w-full resize-none rounded-md p-2"
           value={tabs[currentTab].text}
           onChange={(e) => {
-
             setTabs((prevTabs) => {
               const updatedTabs = [...prevTabs];
               updatedTabs[currentTab].text = e.target.value;
               return updatedTabs;
             });
-
           }}
         />
         <Snippets name={currentName} />
