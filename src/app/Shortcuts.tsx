@@ -6,7 +6,7 @@ const useShortcuts = (
   currentTab,
   setTabs,
   tabText,
-  textArea
+  textArea: { current: HTMLTextAreaElement }
 ) => {
   const [cache, setCache] = useState(tabText);
 
@@ -42,9 +42,23 @@ const useShortcuts = (
     }
   }
 
+  function findLineBounds(text, cursorPos) {
+    let lineStart = cursorPos;
+    let lineEnd = cursorPos;
+    while (lineStart > 0 && text.charAt(lineStart - 1) !== "\n") {
+      lineStart--;
+    }
+    while (lineEnd < text.length && text.charAt(lineEnd) !== "\n") {
+      lineEnd++;
+    }
+    return { lineStart, lineEnd };
+  }
+
   useEffect(() => {
     let ctrlPressed = false;
     let shiftPressed = false;
+    let altPressed = false;
+
     const keydown = document.addEventListener("keydown", (e) => {
       if (e.ctrlKey) {
         ctrlPressed = true;
@@ -52,6 +66,10 @@ const useShortcuts = (
 
       if (e.shiftKey) {
         shiftPressed = true;
+      }
+
+      if (e.altKey) {
+        altPressed = true;
       }
 
       // COMMANDS
@@ -71,15 +89,7 @@ const useShortcuts = (
             const updatedTabs = [...tabs];
             const { text } = updatedTabs[currentTab];
 
-            // Encontrar o início e o fim da linha atual
-            let lineStart = cursorPos;
-            let lineEnd = cursorPos;
-            while (lineStart > 0 && text.charAt(lineStart - 1) !== "\n") {
-              lineStart--;
-            }
-            while (lineEnd < text.length && text.charAt(lineEnd) !== "\n") {
-              lineEnd++;
-            }
+            const { lineStart, lineEnd } = findLineBounds(text, cursorPos);
 
             // Adicionar "> " ao início da linha atual
             const updatedText =
@@ -103,6 +113,57 @@ const useShortcuts = (
         }
       }
 
+      if (altPressed && (e.key == "ArrowDown" || e.key == "ArrowUp")) {
+        e.preventDefault();
+        const cursorPos = textArea.current.selectionStart;
+        try {
+          setTabs((tabs) => {
+            const updatedTabs = [...tabs];
+            const { text } = updatedTabs[currentTab];
+            const textLines = text.trim().split("\n");
+
+            const { lineStart, lineEnd } = findLineBounds(text, cursorPos);
+
+            let nlCount = text.substring(0, lineEnd).split("\n").length - 1;
+
+            if (e.key == "ArrowUp" && nlCount > 0) {
+              let nl = textLines[nlCount];
+              textLines[nlCount] = textLines[nlCount - 1];
+              textLines[nlCount - 1] = nl;
+
+              // Atualizar o texto no array de tabs
+              updatedTabs[currentTab].text = textLines.join("\n");
+
+              // Restaurar a posição do cursor após a atualização do estado
+              setTimeout(() => {
+                const newCursorPos = cursorPos - textLines[nlCount].length - 1;
+                textArea.current.setSelectionRange(newCursorPos, newCursorPos);
+              }, 0);
+            }
+
+            if (e.key == "ArrowDown" && nlCount < textLines.length - 1) {
+              let nl = textLines[nlCount];
+              textLines[nlCount] = textLines[nlCount + 1];
+              textLines[nlCount + 1] = nl;
+
+              // Atualizar o texto no array de tabs
+              updatedTabs[currentTab].text = textLines.join("\n");
+
+              // Restaurar a posição do cursor após a atualização do estado
+              setTimeout(() => {
+                const newCursorPos = cursorPos + textLines[nlCount].length + 1;
+                textArea.current.setSelectionRange(newCursorPos, newCursorPos);
+              }, 0);
+            }
+
+            return updatedTabs;
+          });
+        } catch (e) {
+          console.log("unable to change lines");
+        }
+      }
+
+
       if (ctrlPressed && e.key == "z") {
         setTabs((tabs) => {
           const updatedTabs = [...tabs];
@@ -119,6 +180,10 @@ const useShortcuts = (
 
       if (e.shiftKey) {
         shiftPressed = false;
+      }
+
+      if (e.altKey) {
+        altPressed = false;
       }
     });
 
