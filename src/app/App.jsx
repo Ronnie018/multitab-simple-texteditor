@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useRef, useState } from "react";
 import Snippets from "./Snippets";
 import { FaRegSave } from "react-icons/fa";
 import useShortcuts from "./Shortcuts";
 
 export default function App(props) {
+  const textArea = useRef(null);
   const [tabs, setTabs] = useState(() => {
     const defaultTabs = JSON.stringify([
       { id: 0, text: "", name: "spam" },
@@ -20,7 +21,7 @@ export default function App(props) {
   const [editedName, setEditedName] = useState("");
 
 
-  useShortcuts(currentTab, setTabs, tabs[currentTab].text);
+  useShortcuts(currentTab, setTabs, tabs[currentTab].text, textArea);
 
   const [currentName, setCurrentName] = useState("");
 
@@ -102,6 +103,8 @@ export default function App(props) {
       </div>
       <div className="relative h-full flex-1 bg-dark_gray p-2">
         <textarea
+          id={currentTab}
+          ref={textArea}
           className="min-h-[calc(100vh-5rem)] w-full resize-none rounded-md p-2"
           value={tabs[currentTab].text}
           onChange={(e) => {
