@@ -22,7 +22,18 @@ export default function App(props) {
 
   const [showEmojis, setShowEmojis] = useState(false);
 
-  const emojilist = ["⬇️", "⬆️", "✅", "🔧", "🏆"];
+  const emojilist = [
+    "⬇️",
+    "⬆️",
+    "✅",
+    "🔧",
+    "🏆",
+    "⚙️",
+    "🏷️",
+    "⚠️",
+    "🕒",
+    "📧",
+  ];
 
   useShortcuts(
     currentTab,
