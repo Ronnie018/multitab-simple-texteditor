@@ -120,7 +120,7 @@ const useShortcuts = (
           setTabs((tabs) => {
             const updatedTabs = [...tabs];
             const { text } = updatedTabs[currentTab];
-            const textLines = text.trim().split("\n");
+            const textLines = text.split("\n");
 
             const { lineStart, lineEnd } = findLineBounds(text, cursorPos);
 
@@ -162,7 +162,6 @@ const useShortcuts = (
           console.log("unable to change lines");
         }
       }
-
 
       if (ctrlPressed && e.key == "z") {
         setTabs((tabs) => {
