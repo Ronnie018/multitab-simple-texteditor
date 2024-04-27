@@ -11,14 +11,11 @@ const useShortcuts = (
   showEmojis,
   emojilist
 ) => {
-  const [cache, setCache] = useState(tabText);
 
   function formatInfo() {
     setTabs((tabs) => {
       const updatedTabs = [...tabs];
       const { text } = updatedTabs[currentTab];
-
-      setCache(() => text);
 
       try {
         updatedTabs[currentTab].text = mergeElements(text);
@@ -171,13 +168,7 @@ const useShortcuts = (
       }
     }
 
-    if (ctrlPressed && e.key == "z") {
-      setTabs((tabs) => {
-        const updatedTabs = [...tabs];
-        updatedTabs[currentTab].text = cache;
-        return updatedTabs;
-      });
-    }
+    
   }
 
   function handleKeyUp(e) {
