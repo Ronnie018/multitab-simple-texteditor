@@ -11,7 +11,6 @@ const useShortcuts = (
   showEmojis,
   emojilist
 ) => {
-
   function formatInfo() {
     setTabs((tabs) => {
       const updatedTabs = [...tabs];
@@ -74,17 +73,133 @@ const useShortcuts = (
     // COMMANDS
 
     if (ctrlPressed && e.key == 0) {
+      console.log("data format");
+
       e.preventDefault();
       formatInfo();
     }
 
-    if (ctrlPressed && e.key == "]") {
+    if (ctrlPressed && shiftPressed && e.key === "L") {
+      console.log("lower");
+      e.preventDefault();
+      if (textArea.current) {
+        const { selectionStart, selectionEnd } = textArea.current;
+        const selectedText = textArea.current.value.substring(
+          selectionStart,
+          selectionEnd
+        );
+        const lowercaseText = selectedText.toLowerCase();
+
+        setTabs((tabs) => {
+          const updatedTabs = [...tabs];
+          const { text } = updatedTabs[currentTab];
+
+          // Save the cursor position
+          const cursorPos = textArea.current.selectionStart;
+
+          // Replace the selected text with the lowercase version
+          updatedTabs[currentTab].text =
+            text.substring(0, selectionStart) +
+            lowercaseText +
+            text.substring(selectionEnd);
+
+          // Restore the cursor position
+          setTimeout(() => {
+            textArea.current.setSelectionRange(cursorPos, cursorPos);
+          }, 0);
+
+          return updatedTabs;
+        });
+      }
+    }
+
+    if (ctrlPressed && shiftPressed && e.key === "P") {
+      e.preventDefault();
+      if (textArea.current) {
+        const { selectionStart, selectionEnd } = textArea.current;
+        const selectedText = textArea.current.value.substring(
+          selectionStart,
+          selectionEnd
+        );
+        const phraseCaseText = selectedText
+          .split(".")
+          .map(
+            (phrase) =>
+              phrase.trim().charAt(0).toUpperCase() +
+              phrase.trim().slice(1).toLowerCase()
+          )
+          .join(". ");
+
+        setTabs((tabs) => {
+          const updatedTabs = [...tabs];
+          const { text } = updatedTabs[currentTab];
+
+          // Save the cursor position
+          const cursorPos = textArea.current.selectionStart;
+
+          // Replace the selected text with the phrase case version
+          updatedTabs[currentTab].text =
+            text.substring(0, selectionStart) +
+            phraseCaseText +
+            text.substring(selectionEnd);
+
+          // Restore the cursor position
+          setTimeout(() => {
+            textArea.current.setSelectionRange(cursorPos, cursorPos);
+          }, 0);
+
+          return updatedTabs;
+        });
+      }
+    }
+
+    if (ctrlPressed && e.key === "u") {
+      console.log("upper");
+
+      e.preventDefault();
+
+      if (textArea.current) {
+        const { selectionStart, selectionEnd } = textArea.current;
+        const selectedText = textArea.current.value.substring(
+          selectionStart,
+          selectionEnd
+        );
+        const uppercaseText = selectedText.toUpperCase();
+
+        console.log(uppercaseText);
+
+        setTabs((tabs) => {
+          const updatedTabs = [...tabs];
+          const { text } = updatedTabs[currentTab];
+
+          // Save the cursor position
+          const cursorPos = textArea.current.selectionStart;
+
+          // Replace the selected text with the uppercase version
+          updatedTabs[currentTab].text =
+            text.substring(0, selectionStart) +
+            uppercaseText +
+            text.substring(selectionEnd);
+
+          // Restore the cursor position
+          setTimeout(() => {
+            textArea.current.setSelectionRange(cursorPos, cursorPos);
+          }, 0);
+
+          return updatedTabs;
+        });
+      }
+    }
+
+    if (ctrlPressed && e.key === "]") {
+      console.log("show emojis");
       e.preventDefault();
 
       setShowEmojis((state) => !state);
     }
 
     if (ctrlPressed && shiftPressed && e.key === ":") {
+      console.log("add > prefix");
       e.preventDefault();
 
       if (textArea.current) {
@@ -119,6 +234,7 @@ const useShortcuts = (
     }
 
     if (altPressed && (e.key == "ArrowDown" || e.key == "ArrowUp")) {
+      console.log("move line up/down");
       e.preventDefault();
       const cursorPos = textArea.current.selectionStart;
       try {
@@ -167,8 +283,6 @@ const useShortcuts = (
         console.log("unable to change lines");
       }
     }
-
-    
   }
 
   function handleKeyUp(e) {
