@@ -11,6 +11,7 @@ const useShortcuts = (
   showEmojis,
   emojilist
 ) => {
+  let emojisShowing = false;
   function formatInfo() {
     setTabs((tabs) => {
       const updatedTabs = [...tabs];
@@ -195,6 +196,8 @@ const useShortcuts = (
       console.log("show emojis");
       e.preventDefault();
 
+      emojisShowing = !emojisShowing
+
       setShowEmojis((state) => !state);
     }
 
@@ -311,7 +314,8 @@ const useShortcuts = (
   }, [currentTab]);
 
   function handleKeyDownEmojis(e) {
-    if (showEmojis && "0123456789".includes(e.key)) {
+
+    if (emojisShowing && "0123456789".includes(e.key)) {
       e.preventDefault();
       const cursorPos = textArea.current.selectionStart;
       const emoji = emojilist[e.key];
