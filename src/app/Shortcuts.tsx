@@ -192,6 +192,14 @@ const useShortcuts = (
       }
     }
 
+    if (e.key === " ") {
+      
+      ctrlPressed = false;
+      shiftPressed = false;
+      altPressed = false;
+
+    }
+
     if (ctrlPressed && e.key === "]") {
       console.log("show emojis");
       e.preventDefault();
