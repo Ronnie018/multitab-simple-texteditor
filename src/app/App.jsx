@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import Snippets from "./Snippets";
 import { FaRegSave } from "react-icons/fa";
 import useShortcuts from "./Shortcuts";
+import classNames from "classnames";
 
 export default function App(props) {
   const textArea = useRef(null);
@@ -83,7 +84,10 @@ export default function App(props) {
           tabs.map(({ id, name }) => (
             <div
               key={id}
-              className="min-w-10 grid h-10 cursor-pointer place-items-center rounded-md bg-blue_main px-1 hover:bg-blue_dark"
+              className={classNames(
+                "min-w-10 grid h-10 cursor-pointer place-items-center rounded-md px-1 hover:bg-blue_dark",
+                id === currentTab ? "bg-blue_main" : "bg-dark_gray"
+              )}
               onClick={() => handleTabChange(id)}
               onDoubleClick={handleDoubleClick}
               title={name} // Tooltip content
@@ -102,13 +106,13 @@ export default function App(props) {
             </div>
           ))}
         <div
-          className="grid h-10 w-10 cursor-pointer place-items-center rounded-md bg-blue_main hover:bg-blue_dark"
+          className="grid h-10 w-10 cursor-pointer place-items-center rounded-md bg-dark_gray hover:bg-blue_dark"
           onClick={() => setTabs([...tabs, { id: tabs.length }])}
         >
           +
         </div>
         <div
-          className="relative grid h-10 w-10 cursor-pointer place-items-center rounded-md bg-blue_main hover:bg-blue_dark"
+          className="relative grid h-10 w-10 cursor-pointer place-items-center rounded-md bg-dark_gray hover:bg-blue_dark"
           onClick={() => {
             const blob = new Blob([JSON.stringify(tabs)], {
               type: "application/json",
