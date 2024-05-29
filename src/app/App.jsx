@@ -111,22 +111,45 @@ export default function App(props) {
         >
           +
         </div>
-        <div
-          className="relative grid h-10 w-10 cursor-pointer place-items-center rounded-md bg-dark_gray hover:bg-blue_dark"
-          onClick={() => {
-            const blob = new Blob([JSON.stringify(tabs)], {
-              type: "application/json",
-            });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement("a");
-            link.href = url;
-            link.download = "tabs.json";
-            link.click();
-            // tabs on localstorage
-            localStorage.setItem("tabs", JSON.stringify(tabs));
-          }}
-        >
-          <FaRegSave size={20} color="white" />
+        <div className="flex flex-col gap-2">
+          <div
+            className="relative grid h-5 w-10 cursor-pointer place-items-center rounded-md bg-dark_gray hover:bg-blue_dark"
+            onClick={() => {
+              const blob = new Blob([JSON.stringify(tabs)], {
+                type: "application/json",
+              });
+              const url = URL.createObjectURL(blob);
+              const link = document.createElement("a");
+              link.href = url;
+              link.download = "tabs.json";
+              link.click();
+              // tabs on localstorage
+              localStorage.setItem("tabs", JSON.stringify(tabs));
+            }}
+          >
+            <FaRegSave size={14} color="white" />
+          </div>
+
+          <div
+            className="relative grid h-4 w-10 cursor-pointer place-items-center rounded-md bg-dark_gray text-xs font-light hover:bg-blue_dark"
+            onClick={(e) => {
+              e.preventDefault();
+              const input = document.createElement("input");
+              input.type = "file";
+              input.accept = ".json";
+              input.onchange = (e) => {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                reader.onload = () => {
+                  setTabs(JSON.parse(reader.result));
+                };
+                reader.readAsText(file);
+              };
+              input.click();
+            }}
+          >
+            load
+          </div>
         </div>
       </div>
       <div className="relative h-full flex-1 bg-dark_gray p-2">
