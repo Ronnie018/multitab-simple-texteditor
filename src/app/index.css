@@ -14,11 +14,11 @@
 }
 
 textarea {
-  @apply font-light !important;
+  @apply font-light bg-blue_dark;
 }
 
 textarea::selection {
-  @apply bg-white_ish text-dark_gray !important;
+  @apply bg-white_ish text-dark_gray;
 }
 
 .masked::before {
@@ -60,8 +60,4 @@ select {
     opacity: 1;
     transform: translateY(0rem);
   }
-}
-
-textarea {
-  @apply bg-blue_dark font-thin;
 }
