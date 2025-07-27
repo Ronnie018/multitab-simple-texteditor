@@ -4,6 +4,25 @@ import { FaRegSave } from "react-icons/fa";
 import useShortcuts from "./Shortcuts";
 import classNames from "classnames";
 
+function validateOccurrences(text, target, validPrefixes) {
+  const regex = new RegExp(target, 'gi');
+  let match;
+
+  while ((match = regex.exec(text)) !== null) {
+    const startIndex = match.index;
+    const before = text.slice(Math.max(0, startIndex - 10), startIndex);
+
+    const hasValidPrefix = validPrefixes.some(prefix => before.endsWith(prefix));
+
+    if (!hasValidPrefix) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+
 export default function App(props) {
   const textArea = useRef(null);
   const [tabs, setTabs] = useState(() => {
@@ -11,18 +30,21 @@ export default function App(props) {
       { id: 0, text: "", name: "spam" },
       { id: 1, text: "", name: "INCS" },
     ]);
-
+    
     const savedTabs = JSON.parse(localStorage.getItem("tabs") || defaultTabs);
-
+    
     return savedTabs;
   });
-
+  
   const [currentTab, setCurrentTab] = useState(0);
   const [isEditing, setIsEditing] = useState(false);
   const [editedName, setEditedName] = useState("");
 
+  const [wordGuard, setWordGuard] = useState("")
+  const [editWordGuard, setEditWordGuard] = useState(false)
+  
   const [showEmojis, setShowEmojis] = useState(false);
-
+  
   const emojilist = [
     "⬇️",
     "⬆️",
@@ -99,7 +121,7 @@ export default function App(props) {
                   value={editedName}
                   onChange={handleNameChange}
                   onBlur={handleNameBlur}
-                  onKeyDown={handleNameKeyDown} // Handle "Enter" key
+                  onKeyDown={(handleNameKeyDown)} // Handle "Enter" key
                   autoFocus
                 />
               )}
@@ -107,9 +129,32 @@ export default function App(props) {
           ))}
         <div
           className="grid h-10 w-10 cursor-pointer place-items-center rounded-md bg-dark_gray hover:bg-blue_dark"
-          onClick={() => setTabs([...tabs, { id: tabs.length }])}
+          onDoubleClick={() =>{
+            console.log("aaa");
+            return setTabs([...tabs, { id: tabs.length }])
+          }}
+          onContextMenu={(e) =>{
+            e.preventDefault();
+            setEditWordGuard(!editWordGuard)
+          }}
         >
-          +
+          {editWordGuard ? (
+             <input
+                  type="text"
+                  value={wordGuard} 
+                  onChange={(e) => setWordGuard(e.target.value)}
+                  autoFocus
+                  onBlur={() => setEditWordGuard(false)}
+                  className="bg-dark_gray text-white_ish w-10 h-10"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      setEditWordGuard(false)
+                    }
+                  }} // Handle "Enter" key
+                />
+          ) : 
+            "+"
+          }
         </div>
         <div className="flex flex-col gap-2">
           <div
@@ -184,7 +229,10 @@ export default function App(props) {
         <textarea
           id={currentTab}
           ref={textArea}
-          className="min-h-[calc(100vh-5rem)] w-full resize-none rounded-md p-2"
+          className={classNames(
+            "min-h-[calc(100vh-5rem)] w-full resize-none rounded-md p-2",
+            (wordGuard && tabs[currentTab].text.includes(wordGuard) & !validateOccurrences(tabs[currentTab].text, wordGuard, ["o ","o"])) ? "bg-blue_main" : "bg-blue_dark"
+          )}
           value={tabs[currentTab].text}
           onChange={(e) => {
             setTabs((prevTabs) => {
@@ -199,3 +247,5 @@ export default function App(props) {
     </div>
   );
 }
+
+
