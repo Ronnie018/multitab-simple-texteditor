@@ -3,25 +3,7 @@ import Snippets from "./Snippets";
 import { FaRegSave } from "react-icons/fa";
 import useShortcuts from "./Shortcuts";
 import classNames from "classnames";
-
-function validateOccurrences(text, target, validPrefixes) {
-  const regex = new RegExp(target, 'gi');
-  let match;
-
-  while ((match = regex.exec(text)) !== null) {
-    const startIndex = match.index;
-    const before = text.slice(Math.max(0, startIndex - 10), startIndex);
-
-    const hasValidPrefix = validPrefixes.some(prefix => before.endsWith(prefix));
-
-    if (!hasValidPrefix) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
+import validateOccurrences from "./validateOccurrences";
 
 export default function App(props) {
   const textArea = useRef(null);
@@ -231,7 +213,7 @@ export default function App(props) {
           ref={textArea}
           className={classNames(
             "min-h-[calc(100vh-5rem)] w-full resize-none rounded-md p-2",
-            (wordGuard && tabs[currentTab].text.includes(wordGuard) & !validateOccurrences(tabs[currentTab].text, wordGuard, ["o ","o"])) ? "bg-blue_main" : "bg-blue_dark"
+            (wordGuard && tabs[currentTab].text.includes(wordGuard) && !validateOccurrences(tabs[currentTab].text, wordGuard)) ? "bg-blue_main" : "bg-blue_dark"
           )}
           value={tabs[currentTab].text}
           onChange={(e) => {
@@ -242,7 +224,7 @@ export default function App(props) {
             });
           }}
         />
-        <Snippets name={currentName} />
+        <Snippets name={currentName}/>
       </div>
     </div>
   );
